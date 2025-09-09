@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Gestión de Alumnos</title>
+</head>
+<body>
+  <h1>Registro de Alumnos</h1>
+
+  <form id="formAlumno">
+    <input type="text" id="nombre" placeholder="Nombre" required>
+    <input type="text" id="apellido" placeholder="Apellido" required>
+    <input type="text" id="codigo" placeholder="Código" required>
+    <input type="email" id="correo" placeholder="Correo" required>
+    <button type="submit">Registrar</button>
+  </form>
+
+  <h2>Lista de Alumnos</h2>
+  <table border="1">
+    <thead>
+      <tr>
+        <th>Nombre</th>
+        <th>Apellido</th>
+        <th>Código</th>
+        <th>Correo</th>
+      </tr>
+    </thead>
+    <tbody id="tablaAlumnos"></tbody>
+  </table>
+
+  <script>
+    const API_URL = "/alumnos";
+
+    async function cargarAlumnos() {
+      const res = await fetch(API_URL);
+      const alumnos = await res.json();
+      const tabla = document.getElementById("tablaAlumnos");
+      tabla.innerHTML = "";
+      alumnos.forEach(alumno => {
+        tabla.innerHTML += `
+          <tr>
+            <td>${alumno.nombre}</td>
+            <td>${alumno.apellido}</td>
+            <td>${alumno.codigo}</td>
+            <td>${alumno.correo}</td>
+          </tr>
+        `;
+      });
+    }
+
+    document.getElementById("formAlumno").addEventListener("submit", async e => {
+      e.preventDefault();
+      const nuevo = {
+        nombre: document.getElementById("nombre").value,
+        apellido: document.getElementById("apellido").value,
+        codigo: document.getElementById("codigo").value,
+        correo: document.getElementById("correo").value,
+      };
+      await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(nuevo)
+      });
+      e.target.reset();
+      cargarAlumnos();
+    });
+
+    cargarAlumnos();
+  </script>
+</body>
+</html>
